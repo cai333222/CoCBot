@@ -9,14 +9,9 @@ warnings.filterwarnings("ignore")
 
 import uiautomator2 as u2
 import time
-import random
 import sys
 from datetime import datetime as dt
-import tkinter as tk
-from tkinter import messagebox
 import cv2
-import numpy as np
-import re
 from paddlex import create_model
 
 # ==============================================
