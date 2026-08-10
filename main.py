@@ -446,6 +446,5 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\n\n💥 发生未捕获异常: {e}")
     finally:
-        # 关闭日志文件
         logger.close()
         print(f"\n📝 日志已保存至：{LOG_PATH}")
