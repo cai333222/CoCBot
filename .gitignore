@@ -1,11 +1,6 @@
-# 数据集文件夹
 dataset/
-# VSCode配置
 .vscode/
 *.bat
-# 模型文件
 models/
-
-#ipynb
 *.ipynb
 
