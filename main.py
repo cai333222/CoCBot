@@ -1,10 +1,10 @@
 # ===================== 【必须放在所有import最顶部】屏蔽Paddle日志 =====================
 import os
 import warnings
-os.environ["GLOG_minloglevel"] = "2"
-os.environ["PADDLE_HIDE_INITIAL_MESSAGE"] = "1"
-os.environ["FLAGS_call_stack_level"] = "2"
-warnings.filterwarnings("ignore")
+# os.environ["GLOG_minloglevel"] = "2"
+# os.environ["PADDLE_HIDE_INITIAL_MESSAGE"] = "1"
+# os.environ["FLAGS_call_stack_level"] = "2"
+# warnings.filterwarnings("ignore")
 # ==================================================================================
 
 import uiautomator2 as u2
@@ -12,6 +12,7 @@ import time
 import sys
 from datetime import datetime as dt
 import cv2
+from orb_match import multi_scale_template_match
 from paddlex import create_model
 
 # ==============================================
@@ -19,7 +20,7 @@ from paddlex import create_model
 #      所有坐标、颜色、IP、开关、阈值在此修改
 # ==============================================
 # -------- 设备与应用 --------
-DEVICE_IP = "192.168.0.102"
+DEVICE_IP = "192.168.0.103"
 PACKAGE_NAME = "com.tencent.tmgp.supercell.clashofclans"
 # =====================【全局只加载一次模型】=====================
 DET_MODEL_PATH = r"D:\coc_bat\models\det\best_accuracy\inference"
@@ -61,8 +62,8 @@ POS_OIL_CHECK = (2708, 394)
 
 # -------- 等待识别点位与目标颜色 --------
 # 战斗加载完成检测点
-POS_BATTLE_LOAD_CHECK = (2738, 1626)
-COLOR_BATTLE_LOAD = (228, 81, 14)
+POS_BATTLE_LOAD_CHECK = (2862, 1476)
+COLOR_BATTLE_LOAD = (252, 188, 54)
 # 战斗结束按钮检测点
 POS_BATTLE_END_CHECK = (1467, 1787)
 COLOR_BATTLE_END = (216, 245, 119)
@@ -81,26 +82,26 @@ IMG_FOLDER = f"dataset/{timestamp}_img"
 DRAGON_START = (1619, 1704)
 DRAGON_END = (2712, 880)
 DRAGON_CLICK_NUM = 11
-POS_DRAGON_SELECT = (685, 1828)
+POS_DRAGON_SELECT = None
 
 # 英雄坐标
-POS_QUEEN_SELECT = (1117, 2021) #女王
+POS_QUEEN_SELECT = None #女王
 POS_QUEEN_DROP = (2675, 821)
 
-POS_WARDEN_SELECT = (1021, 2034) #永王
+POS_WARDEN_SELECT = None #永王
 POS_WARDEN_DROP = (2015, 1322)
 
-POS_ROYAL_CHAMP_SELECT = (1158, 1827) #蛮王
+POS_ROYAL_CHAMP_SELECT = None #蛮王
 POS_ROYAL_CHAMP_DROP = (2015, 1322)
 
-POS_GIANT_GUARD_SELECT = (1022, 1814) #闰土
+POS_GIANT_GUARD_SELECT = None #闰土
 POS_GIANT_GUARD_DROP = (2015, 1322)
 
-POS_BALLOON_SELECT = (865, 1830) #飞艇
+POS_BALLOON_SELECT = None#飞艇
 POS_BALLOON_DROP = (2015, 1322)
 
 # 攻城训练营选中坐标
-POS_SIEGE_CAMP_SELECT = (1354, 1833)
+# POS_SIEGE_CAMP_SELECT = (1354, 1833)
 # 柱子投放批次坐标列表
 SIEGE_BATCHES = [
     [(1498, 1346), (1921, 1054), (2276, 817)],
@@ -114,7 +115,7 @@ SIEGE_BATCHES = [
 DELAY_SHORT = 0.3
 DELAY_WAIT_TROOP = 16
 DELAY_LOOP_INTERVAL = 0.5
-DELAY_CAMP_INTERVAL = 5
+DELAY_CAMP_INTERVAL = 0.5
 # ==============================================
 #                   日志输出类
 # ==============================================
@@ -243,9 +244,8 @@ def take_screenshot(count):
             return {"gold": 0, "elixir": 0, "dark_elixir": 0}
 
         # 在裁剪后的小图执行文字检测
-        det_result = list(det_model.predict(crop_area))
-        res_json = det_result.json["res"]
-        dt_polys = res_json["dt_polys"]
+        det_result = list(det_model.predict(crop_area))[0]
+        dt_polys = det_result["dt_polys"]
 
         candidate_list = []
 
@@ -258,7 +258,7 @@ def take_screenshot(count):
             ymax = int(max(ys))
 
             crop_text = crop_area[ymin:ymax, xmin:xmax]
-            rec_out = list(rec_model.predict(crop_text))
+            rec_out = list(rec_model.predict(crop_text))[0]
             text = rec_out["rec_text"].strip()
             rec_score = rec_out["rec_score"]
 
@@ -325,6 +325,8 @@ def is_color_match(color1, color2, tolerance=COLOR_TOLERANCE):
 #                   战斗逻辑
 # ==============================================
 def attack_village(count):
+    global POS_DRAGON_SELECT, POS_QUEEN_SELECT, POS_WARDEN_SELECT
+    global POS_GIANT_GUARD_SELECT, POS_ROYAL_CHAMP_SELECT, POS_SIEGE_CAMP_SELECT, POS_BALLOON_SELECT
     # 1. 搜索进攻
     safe_click(POS_SEARCH, "搜索")
     time.sleep(DELAY_SHORT)
@@ -340,7 +342,27 @@ def attack_village(count):
 
     # 等待战斗加载完成
     wait_for_color(POS_BATTLE_LOAD_CHECK[0], POS_BATTLE_LOAD_CHECK[1], COLOR_BATTLE_LOAD, desc="战斗加载完成")
-
+    if(count == 1):
+        print("🔍 第一次进攻，进行模板匹配获取坐标点位")
+        d.screenshot("test_img/screenshot.png")
+        template_queen = cv2.imread("test_img/queen.png")
+        template_yongwang = cv2.imread("test_img/yongwang.png")
+        template_cangying = cv2.imread("test_img/CangYing.png")
+        template_longwang = cv2.imread("test_img/LongWang.png")
+        template_leilong = cv2.imread("test_img/leilong.png")
+        template_zhuzi = cv2.imread("test_img/zhuzi.png")
+        template_feiting = cv2.imread("test_img/feiting.png")
+        template_manwang = cv2.imread("test_img/manwang.png")
+        template_runtu = cv2.imread("test_img/runtu.png")
+        screen = cv2.imread("test_img/screenshot.png")
+        ok,POS_DRAGON_SELECT = multi_scale_template_match(screen, template_leilong, threshold=0.7)
+        ok,POS_QUEEN_SELECT = multi_scale_template_match(screen, template_queen, threshold=0.7)
+        ok,POS_WARDEN_SELECT = multi_scale_template_match(screen, template_yongwang, threshold=0.7)
+        ok,POS_GIANT_GUARD_SELECT = multi_scale_template_match(screen, template_runtu, threshold=0.7)
+        ok,POS_ROYAL_CHAMP_SELECT = multi_scale_template_match(screen, template_cangying, threshold=0.7)
+        ok,POS_SIEGE_CAMP_SELECT = multi_scale_template_match(screen, template_zhuzi, threshold=0.7)
+        ok,POS_BALLOON_SELECT = multi_scale_template_match(screen, template_feiting, threshold=0.7)
+        print("✅ 模板匹配完成，已获取所有坐标点位",POS_DRAGON_SELECT,POS_QUEEN_SELECT,POS_WARDEN_SELECT,POS_GIANT_GUARD_SELECT,POS_ROYAL_CHAMP_SELECT,POS_SIEGE_CAMP_SELECT,POS_BALLOON_SELECT)
     # 4. 下兵滑动
     d.swipe(1700, 1500, 1000, 1000, 0.1)
 
