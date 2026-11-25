@@ -2,9 +2,9 @@ from paddlex import create_model
 import cv2
 import os
 # ====================== 配置区 ======================
-DET_MODEL_PATH = r"D:\PaddleX-release-3.7\output\det\best_accuracy\inference"
-REC_MODEL_PATH = r"D:\PaddleX-release-3.7\output\rec\best_accuracy\inference"
-TEST_IMAGE = r"D:\coc_bat\dataset\img_crop\fish_21.png"
+DET_MODEL_PATH = r"D:\coc_bat\models\det\best_accuracy\inference"
+REC_MODEL_PATH = r"D:\coc_bat\models\rec\best_accuracy\inference"
+TEST_IMAGE = r"D:\coc_bat\dataset\img_crop\fish_1.png"
 SAVE_CROP_DIR = r"D:\coc_bat\dataset\crop_text"
 # ====================================================
 

@@ -2,10 +2,10 @@ import os
 from PIL import Image
 
 # ===================== 配置区 =====================
-IMG_FOLDER = r"./20260731_151902_img"
-CROP_FOLDER = r"./img_crop"
+IMG_FOLDER = r"D:\coc_bat\dataset\20261125_111518_img"
+CROP_FOLDER = r"D:\coc_bat\dataset\img_crop"
 x1, x2 = 1000, 1800
-y1, y2 = 880, 1300
+y1, y2 = 920, 1340
 # ==================================================
 
 def get_save_path(base_dir, original_filename):

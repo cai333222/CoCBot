@@ -1,0 +1,12 @@
+# CoC Auto Bot 依赖
+# 建议在 conda 环境（如 clash）中安装；GPU 推理请按你的 CUDA 版本安装 paddlepaddle-gpu
+
+uiautomator2>=2.16.0
+opencv-python>=4.5.0
+numpy>=1.21.0
+Pillow>=9.0.0
+PyYAML>=6.0
+
+# PaddleX 3.x（含 PP-OCRv5）与 PaddlePaddle 3.x
+paddlex>=3.0.0
+paddlepaddle>=3.0.0

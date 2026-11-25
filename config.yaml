@@ -1,0 +1,129 @@
+# ============================================================
+#   CoC 自动打鱼脚本 — 统一配置
+#   所有坐标、颜色、IP、阈值、模板路径、延时都在此修改
+#   （坐标基于设备分辨率 3200x2136，换设备/分辨率时需同步调整）
+# ============================================================
+
+# -------- 设备与应用 --------
+device:
+  ip: "10.20.242.49" # 安卓设备无线 ADB IP
+  package_name: "com.tencent.tmgp.supercell.clashofclans" # 部落冲突国服包名
+
+# -------- OCR 模型（相对项目根目录）--------
+models:
+  det_dir: "models/det/best_accuracy/inference" # 文字检测模型
+  rec_dir: "models/rec/best_accuracy/inference" # 文字识别模型
+  device: "gpu" # gpu / cpu
+
+# -------- 界面点击坐标 --------
+positions:
+  search: [212, 1900] # 搜索
+  attack: [553, 1505] # 攻击
+  jingong: [2672, 1714] # 进攻
+  yuanbing: [1575, 1167] # 援兵按钮
+  qingqiu: [1143, 1723] # 请求支援
+  fasong: [1987, 1426] # 发送请求
+  cake_1: [2610, 1567] # 蛋糕模式点击 1
+  cake_2: [1976, 1450] # 蛋糕模式点击 2
+  exit_battle: [229, 1618] # 结束战斗
+  confirm_leave: [1963, 1304] # 确认离开
+  close_settle: [1589, 1814] # 关闭结算
+
+# -------- 布阵区域滑动 --------
+swipe:
+  from: [1700, 1500]
+  to: [1000, 1000]
+  duration: 0.1
+
+# -------- 资源满仓颜色 (RGB) --------
+colors:
+  gold_full: [244, 220, 113] # 金币满色
+  elixir_full: [226, 143, 225] # 圣水满色
+  oil_full: [39, 14, 51] # 黑油满色
+
+# -------- 资源颜色检测坐标 --------
+resource_check:
+  gold: [2565, 86]
+  elixir: [2612, 228]
+  oil: [2708, 394]
+
+# -------- 战斗状态检测 --------
+battle:
+  load_check: [2862, 1476] # 战斗加载完成检测点
+  load_color: [252, 188, 54]
+  end_check: [1467, 1787] # 战斗结束按钮检测点
+  end_color: [216, 245, 119]
+
+# -------- 识别参数 --------
+color_tolerance: 10 # 颜色容差
+wait_color_timeout: 10 # 等待颜色超时（秒）
+match_threshold: 0.7 # 模板匹配阈值
+
+# -------- 模板文件（key 为统一命名，value 为 test_img 下文件名）--------
+templates:
+  hero_queen: "test_img/queen.png" # 女王 Archer Queen
+  hero_warden: "test_img/YongWang.png" # 永王 Grand Warden
+  hero_king: "test_img/manwang.png" # 蛮王 Barbarian King
+  hero_royal_champ: "test_img/runtu.png" # 闰土 Royal Champion
+  hero_minion_prince: "test_img/CangYing.png" # 亡灵王子 Minion Prince（社区俗称"苍蝇"）
+  dragon: "test_img/leilong.png" # 雷龙 Electro Dragon
+  siege_camp: "test_img/zhuzi.png" # 柱子（攻城训练营）
+  blimp: "test_img/feiting.png" # 飞艇 Battle Blimp
+  elephant: "test_img/daxiang.png" # 大象（暂未用于投放）
+  super_valkyrie: "test_img/cjwushen.png" # 超级武神（暂未用于投放）
+
+# -------- 雷龙下兵 --------
+dragon:
+  start: [1619, 1704] # 起始落点
+  end: [2712, 880] # 结束落点（两点间线性均匀布点）
+  click_num: 11 # 投放次数
+
+# -------- 英雄/单位投放落点 --------
+hero_drop:
+  hero_queen: [2675, 821]
+  hero_warden: [2015, 1322]
+  hero_king: [2015, 1322]
+  hero_royal_champ: [2015, 1322]
+  hero_minion_prince: [2015, 1322]
+  blimp: [2015, 1322]
+
+# -------- 英雄/单位投放顺序（可调整顺序，或删除某行跳过该单位）--------
+hero_drop_order:
+  - hero_queen
+  - hero_warden
+  - hero_king
+  - hero_royal_champ
+  - hero_minion_prince
+  - blimp
+
+# -------- 下兵后立即多点一次触发技能的单位（女王/蛮王/亡灵王子）
+# 永王、闰土不在此列表：它们在攻城段（部队推进时）重新点选触发技能
+ability_trigger_units:
+  - hero_queen
+  - hero_king
+  - hero_minion_prince
+
+# -------- 攻城训练营（柱子）投放批次 --------
+siege_batches:
+  - [[1498, 1346], [1921, 1054], [2276, 817]]
+  - [[1409, 1154], [1757, 938], [2090, 733]]
+  - [[1313, 1007], [1630, 812], [1908, 639]]
+  - [[1170, 906], [1467, 716], [1746, 537]]
+  - [[905, 779], [1208, 534], [1560, 295]]
+
+# -------- 延时（秒）--------
+delays:
+  short: 0.3
+  wait_troop: 16
+  loop_interval: 0.5
+  camp_interval: 5
+
+# -------- 截图裁剪区域（资源数字识别范围）--------
+crop:
+  x1: 1000
+  x2: 1800
+  y1: 920
+  y2: 1340
+
+# -------- 调试 --------
+save_debug_img: true # true=保存每轮截图到磁盘；false=不写磁盘
