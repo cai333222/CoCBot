@@ -539,10 +539,10 @@ def attack_village(count):
         safe_click(POS_EXIT_BATTLE, "结束战斗")
         time.sleep(0.2)
         safe_click(POS_CONFIRM_LEAVE, "确认离开")
-        time.sleep(0.5)
+        time.sleep(2)  # 等待回营动画
+        take_screenshot(count)
         safe_click(POS_CLOSE_SETTLE, "关闭结算")
         print("🏠 [回营] 已强制回村并执行资源识别")
-        take_screenshot(count)
     pause_check() # <-----新增：战斗结束后暂停
 
 # ==============================================
